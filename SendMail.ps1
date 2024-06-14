@@ -1,49 +1,41 @@
 <#PSScriptInfo
 .VERSION 1.0
-.AUTHOR Luka Meester
+.AUTHOR MrPowerShell
 #>
 
-param (
-    [string]$Status,
-    [string]$Servernaam,
-    [string]$DatumTijd,
-    [string]$Oorzaak,
-    [string]$Bedrijfsnaam,
-    [string]$LaatsteWijziging
-)
-
-# SMTP server instellingen
+# SMTP instellingen
 $smtpServer = "smtp.yourserver.com"
-$smtpFrom = "no-reply@yourdomain.com"
-$smtpTo = "servicedesk@yourdomain.com"
-$messageSubject = "Storingsmelding: $Servernaam"
+$port = 587
+$username = "yourusername@yourdomain.com"
+$topsecret = "yourpassword" # nooit wachtwoorden op deze manier opslaan, dit is alleen voor voorbeeld.
+$password = ConvertTo-SecureString $topsecret -AsPlainText -Force
+$psCred = New-Object System.Management.Automation.PSCredential -ArgumentList ($username, $password)
 
-# HTML template inlezen
-$templatePath = "C:\Path\To\Your\template.html"
-$htmlTemplate = Get-Content -Path $templatePath -Raw
+# Adressen
+$from = "yourusername@yourdomain.com"
+$to = "recipient@domain.com"
 
-# HTML template invullen met de parameters
-$htmlContent = $htmlTemplate -replace "{{Status}}", $Status `
-                                -replace "{{Servernaam}}", $Servernaam `
-                                -replace "{{DatumTijd}}", $DatumTijd `
-                                -replace "{{Oorzaak}}", $Oorzaak `
-                                -replace "{{Bedrijfsnaam}}", $Bedrijfsnaam `
-                                -replace "{{LaatsteWijziging}}", $LaatsteWijziging
-
-# E-mail bericht opstellen
-$mailMessage = @{
-    From       = $smtpFrom
-    To         = $smtpTo
-    Subject    = $messageSubject
-    Body       = $htmlContent
-    BodyAsHtml = $true
-    SmtpServer = $smtpServer
-}
+# Bericht
+$subject = "Test Email"
+$body = @"
+<html>
+<head>
+    <title>Test E-mail</title>
+</head>
+<body>
+    <h2>Dit is een test e-mail.</h2>
+    <p>Status Server: Up</p>
+    <p>Servernaam: TestServer01</p>
+    <p>Datum/Tijd: $(Get-Date)</p>
+    <p>Mogelijke oorzaak: Geen</p>
+    <p>Bedrijfsnaam: 1485 Architecten</p>
+    <p>Laatste wijziging: $(Get-Date)</p>
+</body>
+</html>
+"@
 
 # E-mail versturen
-Send-MailMessage @mailMessage
+Send-MailMessage -From $from -To $to -Subject $subject -Body $body -BodyAsHtml -SmtpServer $smtpServer -Credential $psCred -Port $port
 
 Write-Output "E-mail is verstuurd naar de servicedesk."
 
-# Test het script door het aan te roepen met parameters
-# .\SendMail.ps1 -Status "Down" -Servernaam "Server01" -DatumTijd "2024-05-22 10:00" -Oorzaak "Netwerkfout" -Bedrijfsnaam "1485 Architecten" -LaatsteWijziging "2024-05-22 09:50"
