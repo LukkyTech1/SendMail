@@ -1,41 +1,25 @@
 <#PSScriptInfo
 .VERSION 1.0
-.AUTHOR MrPowerShell
+.AUTHOR Niels
 #>
-
-# SMTP instellingen
-$smtpServer = "smtp.yourserver.com"
-$port = 587
-$username = "yourusername@yourdomain.com"
-$topsecret = "yourpassword" # nooit wachtwoorden op deze manier opslaan, dit is alleen voor voorbeeld.
+ 
+#Password
+$username = "powershell2@sunnus.nl"
+$topsecret = "8lRiHzXc" #never store passwords like this.
 $password = ConvertTo-SecureString $topsecret -AsPlainText -Force
 $psCred = New-Object System.Management.Automation.PSCredential -ArgumentList ($username, $password)
-
-# Adressen
-$from = "yourusername@yourdomain.com"
-$to = "recipient@domain.com"
-
-# Bericht
-$subject = "Test Email"
-$body = @"
-<html>
-<head>
-    <title>Test E-mail</title>
-</head>
-<body>
-    <h2>Dit is een test e-mail.</h2>
-    <p>Status Server: Up</p>
-    <p>Servernaam: TestServer01</p>
-    <p>Datum/Tijd: $(Get-Date)</p>
-    <p>Mogelijke oorzaak: Geen</p>
-    <p>Bedrijfsnaam: 1485 Architecten</p>
-    <p>Laatste wijziging: $(Get-Date)</p>
-</body>
-</html>
-"@
-
-# E-mail versturen
-Send-MailMessage -From $from -To $to -Subject $subject -Body $body -BodyAsHtml -SmtpServer $smtpServer -Credential $psCred -Port $port
-
-Write-Output "E-mail is verstuurd naar de servicedesk."
-
+ 
+#SMTP Settings
+$smtp = "smtp.sunnus.nl"
+$port = 587
+ 
+#Address
+$to = "175723@student.horizoncollege.nl" # aanpassen!
+$from = "powershell2@sunnus.nl"
+ 
+#Message
+$subject = "Storing op server: Test"
+$html = Get-Content -path "C:\Users\niels\sendmail opdracht\mail.html"
+ 
+#Send MailMessage
+Send-MailMessage -Body ($html | Out-String) -BodyAsHtml -To $to -Subject $subject -SmtpServer $smtp -From $from -Credential $psCred -Port $port
