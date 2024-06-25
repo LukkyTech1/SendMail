@@ -19,7 +19,7 @@ $from = "powershell2@sunnus.nl"
  
 #Message
 $subject = "Storing op server: Test"
-$html = Get-Content -path "C:\Users\likok\Downloads\Template.html"
+$html = Get-Content -path "$PSScriptRoot\Template.html"
  
 #Send MailMessage
 Send-MailMessage -Body ($html | Out-String) -BodyAsHtml -To $to -Subject $subject -SmtpServer $smtp -From $from -Credential $psCred -Port $port
