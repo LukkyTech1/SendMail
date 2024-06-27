@@ -20,7 +20,7 @@ $from = "powershell2@sunnus.nl"
 #Message
 $subject = "Storing op server: Test"
 $html = Get-Content -path "$PSScriptRoot\Template.html" | Out-String
-$html = $html.Replace("{{status}}", "Up")
+$html = $html.ToString().Replace("{{status}}", "Up")
 
 #Send MailMessage
 Send-MailMessage -Body $html -BodyAsHtml -To $to -Subject $subject -SmtpServer $smtp -From $from -Credential $psCred -Port $port
